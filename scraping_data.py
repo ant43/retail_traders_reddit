@@ -24,7 +24,7 @@ def get_data_about_stock(date, ticker):
         print(ticker + ' has data')
         comments_df['created_utc'] = comments_df['created_utc'].transform(dt.datetime.fromtimestamp)
         comments_df['stock'] = ticker
-        comments_df.to_csv('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv', header=True,
+        comments_df.to_csv(('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv').replace(' ', '_').replace(':', '-'), header=True,
         index=False, columns=list(comments_df.axes[1]))
         print(ticker + ' has data')
     else:

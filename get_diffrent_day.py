@@ -17,7 +17,7 @@ def get_data_about_stock(date, time_length, ticker):
     if not comments_df.empty:
         comments_df['created_utc'] = comments_df['created_utc'].transform(dt.datetime.fromtimestamp)
         comments_df['stock'] = ticker
-        comments_df.to_csv('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv', header=True,
+        comments_df.to_csv(('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv').replace(' ', '_'), header=True,
         index=False, columns=list(comments_df.axes[1]))
     else:
         print(ticker +' did not have any data on this day')
