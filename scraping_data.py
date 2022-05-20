@@ -8,6 +8,7 @@ import datetime as dt
 
 
 
+
 #get a list of the stock tickers
 stock_tickers = pd.read_csv("z3tagczldqedjrsv.csv")['TICKER'].tolist()
 
