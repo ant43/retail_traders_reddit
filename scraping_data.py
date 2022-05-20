@@ -11,11 +11,12 @@ import datetime as dt
 
 #get a list of the stock tickers
 stock_tickers = pd.read_csv("wsb_comments.csv")['TICKER'].tolist()
-#this is the starting date
-date = 
+#this is the starting date y,m,d,h,s is how it is written
+date = dt.datetime(2020, 12, 13, 0, 0).timestamp()
 #it will continu untill the end date
-while date < 1652932800:
-    map()
+while date < dt.datetime(2022, 12, 14, 0, 0).timestamp():
+    map(lambda x : get_data_about_stock(date,x),
+        stock_tickers )
     date = date + 86400
 
 
