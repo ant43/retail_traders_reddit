@@ -25,7 +25,7 @@ def get_data_about_stock(date, ticker):
         comments_df['stock'] = ticker
         comments_df.to_csv('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv', header=True,
         index=False, columns=list(comments_df.axes[1]))
-        print(ticker + ' ')
+        print(ticker + ' has data')
     else:
         print(ticker +' did not have any data on this day')
 
