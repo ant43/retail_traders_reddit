@@ -10,9 +10,13 @@ import datetime as dt
 
 
 #get a list of the stock tickers
-stock_tickers = pd.read_csv("z3tagczldqedjrsv.csv")['TICKER'].tolist()
-
-
+stock_tickers = pd.read_csv("wsb_comments.csv")['TICKER'].tolist()
+#this is the starting date
+date = 
+#it will continu untill the end date
+while date < 1652932800:
+    map()
+    date = date + 86400
 
 
 
@@ -30,7 +34,7 @@ def get_data_about_stock(date, ticker):
     comments_df = pd.DataFrame(comments)
     comments_df['created_utc'] = comments_df['created_utc'].transform(dt.datetime.fromtimestamp)
     comments_df['stock'] = 'GME'
-    comments_df.to_csv('./'+ticker + '_' +str()+'.csv', header=True,
+    comments_df.to_csv('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv', header=True,
      index=False, columns=list(comments_df.axes[1]))
 
 
