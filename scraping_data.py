@@ -11,6 +11,7 @@ import datetime as dt
 #might need to change how this is done to make it more effecent but so far I think it is actualy more memory effecent to
 #creat the data frame and csv files one day and stock ticker at a time
 def get_data_about_stock(date, ticker):
+    date = int(date)
     pushShiftAPI = PushshiftAPI()
     #this is the fact that we are looking at the whole day for this thing
     after = date

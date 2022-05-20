@@ -5,6 +5,7 @@ from pmaw import PushshiftAPI
 import datetime as dt
 
 def get_data_about_stock(date, time_length, ticker):
+    date = int(date)
     pushShiftAPI = PushshiftAPI()
     #this is the fact that we are looking at the whole day for this thing
     after = date
