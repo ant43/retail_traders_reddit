@@ -1,4 +1,1 @@
-IN THIS THE scraping_data.py will scrap wall street bets information on each stock and put it into place
-It should be saved in csv file with '(ticker)_(date the data is from).csv' and it should have 4 collums, the user, the body of the comment, the date and the stock ticker mentiond
-Also in get_diffrent_day.py you have a funciton called get_data_about_stock(date, time_length, ticker), which is (date = intiger in epoch time of the starting date, time_length = intiger of how many seconds you want to look at the data, ticker = string of stock ticker). this will return a file in the same way as above. Also if there is no data to be gotten from this, it will print out there is no data to be got from this
-by runnint test_for_GME.py, you will test the function mentond in the line above for 1 day, for 7 days and for one month after may 19, 2022.
+

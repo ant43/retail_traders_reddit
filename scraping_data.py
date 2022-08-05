@@ -10,20 +10,28 @@ import datetime as dt
 
 #might need to change how this is done to make it more effecent but so far I think it is actualy more memory effecent to
 #creat the data frame and csv files one day and stock ticker at a time
+
+def get_data_about_stock(date, ticker, time = 86400):
+=======
 def get_data_about_stock(date, ticker):
-    date = int(date)
+
     pushShiftAPI = PushshiftAPI()
     #this is the fact that we are looking at the whole day for this thing
     after = date
-    before = date + 86400
+    before = date + time
     subreddit="wallstreetbets"
-    comments = pushShiftAPI.search_comments(q = ticker,fields = ['author', 'body', 'created_utc'],subreddit=subreddit, 
-    before=before, after=after)
+    comments = pushShiftAPI.search_comments(q = ticker,fields = ['author', 'body', 'created_utc'],subreddit=subreddit, before=before, 
+    after=after)
     comments_df = pd.DataFrame(comments)
     if not comments_df.empty:
         print(ticker + ' has data')
         comments_df['created_utc'] = comments_df['created_utc'].transform(dt.datetime.fromtimestamp)
         comments_df['stock'] = ticker
+        comments_df.to_csv('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv', header=True,index=False, columns=list(comments_df.axes[1]))
+        print(ticker + ' has data')
+    else:
+        print(ticker + ' has no data on this day')
+
         comments_df.to_csv(('./'+ticker + '_' +str(dt.datetime.fromtimestamp(date))+'.csv').replace(' ', '_').replace(':', '-'), header=True,
         index=False, columns=list(comments_df.axes[1]))
     else:
@@ -31,12 +39,21 @@ def get_data_about_stock(date, ticker):
 
 
 
+
 #get a list of the stock tickers
 stock_tickers = pd.read_csv("listOfTICKERS.csv")['TICKER'].tolist()
 #this is the starting date y,m,d,h,s is how it is written
+
+date = int(dt.datetime(2020, 12, 13, 0, 0).timestamp()) ;lkjfdsa
+stock = ''
+for i in stock_tickers:
+    stock = stock + ' | ' + i
+
+
 date = dt.datetime(2013, 4, 18, 0, 0).timestamp()
+
 #it will continu untill the end date
-while date < dt.datetime(2022, 12, 14, 0, 0).timestamp():
+'''while date < dt.datetime(2022, 12, 14, 0, 0).timestamp():
     list(map(lambda x : get_data_about_stock(date,x),
         stock_tickers ))
-    date = date + 86400
+    date = date + 86400'''
