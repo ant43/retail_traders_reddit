@@ -21,11 +21,10 @@ def get_data_about_stock( year ,ticker, csv_file_name, month = 1, day = 1,   tim
     after = date
     before = date + time
     subreddit="wallstreetbets"
-    comments = pushShiftAPI.search_comments(q = ticker,fields = ['author', 'body', 'created_utc'],subreddit=subreddit, before=before, 
-    after=after)
+    comments = pushShiftAPI.search_comments(q = ticker,fields = ['author', 'body', 'created_utc'],
+    subreddit=subreddit, before=before, after=after)
     comments_df = pd.DataFrame(comments)
     if not comments_df.empty:
-        print(ticker + ' has data')
         comments_df['created_utc'] = comments_df['created_utc'].transform(dt.datetime.fromtimestamp)
         comments_df.to_csv('./'+csv_file_name+'.csv', header=True,index=False, columns=list(comments_df.axes[1]))
         print(ticker + ' has data')
@@ -41,15 +40,14 @@ stock_tickers = pd.read_csv("listOfTICKERS.csv")['TICKER'].tolist()
 
 stock = ''
 for i in stock_tickers:
-    stock = stock + ' | ' + i
+    stock = stock + "|" + i
 stock = stock[3 :]
 
 
 get_data_about_stock( year = 2022 ,ticker = stock, csv_file_name = 'allTheFiles', month = 8, day = 4,   time = 86400 )
 
-date = dt.datetime(2013, 4, 18, 0, 0).timestamp()
+print(len(stock))
 #it will continu untill the end date
-print(stock[0], stock[1], stock[2], stock[-1])
 '''while date < dt.datetime(2022, 12, 14, 0, 0).timestamp():
     list(map(lambda x : get_data_about_stock(date,x),
         stock_tickers ))
