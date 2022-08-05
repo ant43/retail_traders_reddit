@@ -8,7 +8,6 @@ import datetime as dt
 
 
 
-<<<<<<< HEAD
 '''
 This function takes up year, month, and day, and the stock ticker along with the time and csv_file_name, the time is how much into the 
 future you want to look at the stock, the csv file name gives you the name of the csv file you want
