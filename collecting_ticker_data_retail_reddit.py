@@ -28,7 +28,7 @@ def collect_retail_data(year, month, day, ticker_list, csv_file_name, time = 864
     before = date + time
 
     #this number is the number of peaces i must devid the list into becuase of how the push shift api limits my or calls
-    num_divisions = math.ceil(len(ticker_list)/10000)
+    num_divisions = math.ceil(len(ticker_list)/1022)
     
     lists_of_calls = _divide_list(ticker_list, num_divisions)
 
