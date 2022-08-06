@@ -1,5 +1,4 @@
 import csv
-from gc import collect
 import pandas as pd
 from pmaw import PushshiftAPI
 import math
@@ -36,7 +35,7 @@ def collect_retail_data(year, month, day, ticker_list, csv_file_name, time = 864
     before = date + time
 
     #this number is the number of peaces i must devid the list into becuase of how the push shift api limits my or calls
-    num_divisions = math.ceil(len(ticker_list)/'The number that I will find out shortly')
+    num_divisions = math.ceil(len(ticker_list)/10000)
     
     lists_of_calls = _divide_list(list, num_divisions)
 
