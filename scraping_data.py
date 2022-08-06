@@ -13,9 +13,8 @@ This function takes up year, month, and day, and the stock ticker along with the
 future you want to look at the stock, the csv file name gives you the name of the csv file you want
 
 It givs you the author, the body of the comment and the created_utc(time of comment)'''
-def get_data_about_stock( year ,ticker, csv_file_name, month = 1, day = 1,   time = 86400 ):
+def get_data_about_stock( year,month,day ,ticker, csv_file_name, time = 86400 ):
     date = int(dt.datetime(year, month, day, 0, 0).timestamp())
-    date = int(date)
     pushShiftAPI = PushshiftAPI()
     #this is the fact that we are looking at the whole day for this thing
     after = date
@@ -28,8 +27,10 @@ def get_data_about_stock( year ,ticker, csv_file_name, month = 1, day = 1,   tim
         comments_df['created_utc'] = comments_df['created_utc'].transform(dt.datetime.fromtimestamp)
         comments_df.to_csv('./'+csv_file_name+'.csv', header=True,index=False, columns=list(comments_df.axes[1]))
         print(ticker + ' has data')
+        return True
     else:
         print(ticker +' did not have any data on asked timeframe')
+        return False
 
 
 
@@ -38,15 +39,26 @@ def get_data_about_stock( year ,ticker, csv_file_name, month = 1, day = 1,   tim
 stock_tickers = pd.read_csv("listOfTICKERS.csv")['TICKER'].tolist()
 #this is the starting date y,m,d,h,s is how it is written
 
-stock = ''
-for i in stock_tickers:
-    stock = stock + "|" + i
-stock = stock[3 :]
+def _process_list(list):
+    stock = ''
+    for i in list:
+        stock = stock + "|" + i
+    return stock[3 :]
+
+how_many = len(stock_tickers)
+while(not get_data_about_stock( year = 2022 ,ticker = _process_list(stock_tickers), csv_file_name = 'allTheFiles', month = 8, day = 4,   time = 86400 )):
+    print(len(stock_tickers))
+    del stock_tickers[0]
+    how_many = len(stock_tickers)
+
+print('--------------------------------------------------------')
+print(how_many)
 
 
-get_data_about_stock( year = 2022 ,ticker = stock, csv_file_name = 'allTheFiles', month = 8, day = 4,   time = 86400 )
 
-print(len(stock))
+
+
+#print(len(stock))
 #it will continu untill the end date
 '''while date < dt.datetime(2022, 12, 14, 0, 0).timestamp():
     list(map(lambda x : get_data_about_stock(date,x),
