@@ -5,7 +5,7 @@ This is going to scrap data off of subreddits. you will chose the time the subre
 In this in the collecting_ticker_data_retail_reddit file Function call
 
 
-# Functions
+#       Functions
 collect_retail_data(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets')
 
         This looks looks through reddit comment data on a specific time frame (starting at one date then adding the number of seconds as specified), and specific 
