@@ -49,7 +49,11 @@ how_many = len(stock_tickers)
 while(not get_data_about_stock( year = 2022 ,ticker = _process_list(stock_tickers), csv_file_name = 'allTheFiles', month = 8, day = 4,   time = 86400 )):
     print(len(stock_tickers))
     del stock_tickers[0]
+    srcFile = open('how_long_the_file.txt', 'w')
+    print(len(stock_tickers), file = srcFile)
+    srcFile.close()
     how_many = len(stock_tickers)
+
 
 print('--------------------------------------------------------')
 print(how_many)
