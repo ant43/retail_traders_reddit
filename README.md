@@ -44,6 +44,7 @@ collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time = 864
 
 
 collect_retail_data_df(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets')
+=======
 
         This looks looks through reddit comment data on a specific time frame (starting at one date then adding the number of seconds as specified), and specific 
         list of strings too look for in the comments. it returns a data frame which includes the body of the comment, the aouther and the time the comment was made
