@@ -37,11 +37,11 @@ def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time =
     after = date
     before = date + time
 
-    q_inputs = map(_process_list, lists_of_calls)
+    q_inputs = list(map(_process_list, lists_of_calls))
 
-    call_returns = map(lambda x: pushShiftAPI.search_comments(q = x,fields = ['author', 'body', 'created_utc'],
+    call_returns = list(map(lambda x: pushShiftAPI.search_comments(q = x,fields = ['author', 'body', 'created_utc'],
     subreddit=subreddit, before=before, after=after),
-    q_inputs)
+    q_inputs))
 
     call_returns_df = list(map(pd.DataFrame,
     call_returns))
@@ -51,8 +51,8 @@ def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time =
     print('-------------------------------------------------------------------------')
     if call_returns_df:
         if len(call_returns_df)>1:
-            total_df = list(functools.reduce(lambda left, right: left.merge(right, how = 'inner'),
-            call_returns_df))
+            total_df = functools.reduce(lambda left, right: left.merge(right, how = 'inner'),
+            call_returns_df)
         else:
             total_df = call_returns_df[0]
         
@@ -97,12 +97,12 @@ def collect_retail_data_df(year, month, day, ticker_list, csv_file_name, time = 
     print('-------------------------------------------------------------------------')
     if call_returns_df:
         if len(call_returns_df)>1:
-            total_df = list(functools.reduce(lambda left, right: left.merge(right, how = 'inner'),
-            call_returns_df))
+            total_df = functools.reduce(lambda left, right: left.merge(right, how = 'inner'),
+            call_returns_df) 
         else:
             total_df = call_returns_df[0]
         
-        total_df['created_utc'] = total_df['created_utc'].transform(dt.datetime.fromtimestamp)
+        total_df['created_utc'] = int(total_df['created_utc']).transform(dt.datetime.fromtimestamp)
         return total_df
     else:
         print('In the subreddit:', subreddit, '\n',
