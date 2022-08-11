@@ -3,6 +3,7 @@ import pandas as pd
 from pmaw import PushshiftAPI
 import math
 import functools
+import time
 #becuae the API works with datetime I will have to import another package to deal with this
 import datetime as dt
 '''This takes a list and returns a string with each elment in the list written in the string seperated by |'''
@@ -23,52 +24,32 @@ def _divide_list(lst, num_lists):
 
 
 def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets'):
-    date = int(dt.datetime(year, month, day, 0, 0).timestamp())
-    after = date
-    before = date + time
-
-    #this number is the number of peaces i must devid the list into becuase of how the push shift api limits my or calls
-    num_divisions = math.ceil(len(ticker_list)/1022)
-    
-    lists_of_calls = _divide_list(ticker_list, num_divisions)
-
-    date = int(dt.datetime(year, month, day, 0, 0).timestamp())
-    pushShiftAPI = PushshiftAPI()
-    after = date
-    before = date + time
-
-    q_inputs = list(map(_process_list, lists_of_calls))
-
-    call_returns = list(map(lambda x: pushShiftAPI.search_comments(q = x,fields = ['author', 'body', 'created_utc'],
-    subreddit=subreddit, before=before, after=after),
-    q_inputs))
-
-    call_returns_df = list(map(pd.DataFrame,
-    call_returns))
-
-    call_returns_df = list(filter(lambda x: not x.empty,
-    call_returns_df))
-    print('-------------------------------------------------------------------------')
-    if call_returns_df:
-        if len(call_returns_df)>1:
-            total_df = functools.reduce(lambda left, right: left.merge(right, how = 'inner'),
-            call_returns_df)
-        else:
-            total_df = call_returns_df[0]
-        
+    total_df = collect_retail_data_df(year, month, day, ticker_list,time, subreddit )
+    if total_df:
         total_df['created_utc'] = total_df['created_utc'].transform(dt.datetime.fromtimestamp)
         total_df.to_csv('./'+csv_file_name+'.csv', header=True,index=False, columns=list(total_df.axes[1]))
         return True
     else:
-        print('In the subreddit:', subreddit, '\n',
-        'in the time period:', dt.datetime.fromtimestamp(after).isoformat(), ' to ', dt.datetime.fromtimestamp(before).isoformat(), '\n',
-        'with the list :', *ticker_list[: 10], '...')
         return False
 
 
 
 
-def collect_retail_data_df(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets'):
+def collect_retail_data_df(year, month, day, ticker_list, time = 86400, subreddit = 'wallstreetbets'):
+    #this if statment is due to the fact that the push shift API will only work with 200 calls per minute 
+    if(len(ticker_list) > 1022*200) :
+        num_divisions = math.ceil(len(ticker_list)/(1022*200))
+        list_of_calls = _divide_list(ticker_list, num_divisions)
+        call_returns_df = []
+        for i in list_of_calls:
+            call_returns_df.append(collect_retail_data_df(
+                year, month, day, i, time, subreddit
+            ))
+            time.sleep(60)
+        return functools.reduce(lambda left, right: left.merge(right, how = 'inner'),
+            call_returns_df)
+
+    #if over 200 calls is not nessasary
     date = int(dt.datetime(year, month, day, 0, 0).timestamp())
     after = date
     before = date + time
@@ -94,7 +75,6 @@ def collect_retail_data_df(year, month, day, ticker_list, csv_file_name, time = 
 
     call_returns_df = list(filter(lambda x: not x.empty,
     call_returns_df))
-    print('-------------------------------------------------------------------------')
     if call_returns_df:
         if len(call_returns_df)>1:
             total_df = functools.reduce(lambda left, right: left.merge(right, how = 'inner'),
@@ -108,7 +88,7 @@ def collect_retail_data_df(year, month, day, ticker_list, csv_file_name, time = 
         print('In the subreddit:', subreddit, '\n',
         'in the time period:', dt.datetime.fromtimestamp(after).isoformat(), ' to ', dt.datetime.fromtimestamp(before).isoformat(), '\n',
         'with the list :', *ticker_list[: 10], '...')
-        return pd.DataFrame()
+        return pd.DataFrame(columns = ['author', 'body', 'created_utc'])
 
     
 
