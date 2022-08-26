@@ -32,6 +32,17 @@ def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time =
     else:
         return False
 
+#now i have to creat the binary search for searching through strings will have to use it to determan what stock tickers are mentond in the data
+def _strGreaterThan(string1: str, string2: str) -> bool:
+    l = [string1, string2]
+    l.sort()
+    if l[0] == stirng1:
+        return True
+    else:
+        return False
+
+
+
 
 
 
