@@ -22,21 +22,55 @@ def _divide_list(lst, num_lists):
     else:
         return [lst]
 
-
-def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets'):
-    total_df = collect_retail_data_df(year, month, day, ticker_list,time, subreddit )
-    if total_df:
-        total_df['created_utc'] = total_df['created_utc'].transform(dt.datetime.fromtimestamp)
-        total_df.to_csv('./'+csv_file_name+'.csv', header=True,index=False, columns=list(total_df.axes[1]))
-        return True
-    else:
-        return False
-
 #now i have to creat the binary search for searching through strings will have to use it to determan what stock tickers are mentond in the data
 def _strGreaterThan(string1: str, string2: str) -> bool:
     l = [string1, string2]
     l.sort()
-    if l[0] == stirng1:
+    if l[0] == string1:
+        return True
+    else:
+        return False
+
+def _binarySearchString(stringList, target, beginning, end):
+
+    if beginning <= end:
+        middle = (beginning+end) // 2
+        print(middle)
+        if stringList[middle] == target:
+            return True
+        elif _strGreaterThan(stringList[middle], target):
+            return _binarySearchString(stringList, target, middle+1, end)
+        elif _strGreaterThan(target, stringList[middle]):
+            return _binarySearchString(stringList, target, beginning, middle-1)
+    else:
+        return False
+
+def _list_of_tickers_in_comment (comment, list_of_tickers):
+    commentList = comment.split().sort()
+    return list(
+        filter(lambda x: _binarySearchString(commentList, x, 0, len(commentList)+1, 
+        list_of_tickers))
+    )
+
+
+
+def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets'):
+    total_df = _collect_retail_data_df_notickeroutputed(year, month, day, ticker_list,time, subreddit)
+    if not total_df.empty:
+        #print(total_df['created_utc'])
+        #total_df['created_utc'] = total_df['created_utc'].transform(dt.datetime.fromtimestamp)
+        total_df.to_csv('./'+csv_file_name+'.csv', header=True,index=False, 
+        columns=list(total_df.axes[1]))
+
+        #now we have to make a new row in the csv file that is the list of tickers
+        v = open('./'+csv_file_name+'.csv')
+        r = csv.reader(v)
+        row0 = r.next()
+        row0.append('ticker')
+        for item in r:
+            listOfTickersString = _list_of_tickers_in_comment(item[1], ticker_list)
+            tickerString = '|'.join(listOfTickersString)
+            item.append(tickerString)
         return True
     else:
         return False
@@ -45,15 +79,14 @@ def _strGreaterThan(string1: str, string2: str) -> bool:
 
 
 
-
-def collect_retail_data_df(year, month, day, ticker_list, time = 86400, subreddit = 'wallstreetbets'):
+def _collect_retail_data_df_notickeroutputed(year, month, day, ticker_list, time = 86400, subreddit = 'wallstreetbets'):
     #this if statment is due to the fact that the push shift API will only work with 200 calls per minute 
     if(len(ticker_list) > 1022*200) :
         num_divisions = math.ceil(len(ticker_list)/(1022*200))
         list_of_calls = _divide_list(ticker_list, num_divisions)
         call_returns_df = []
         for i in list_of_calls:
-            call_returns_df.append(collect_retail_data_df(
+            call_returns_df.append(_collect_retail_data_df_notickeroutputed(
                 year, month, day, i, time, subreddit
             ))
             time.sleep(60)
@@ -93,7 +126,8 @@ def collect_retail_data_df(year, month, day, ticker_list, time = 86400, subreddi
         else:
             total_df = call_returns_df[0]
         
-        total_df['created_utc'] = int(total_df['created_utc']).transform(dt.datetime.fromtimestamp)
+        total_df['created_utc'] =  total_df['created_utc'].transform(int)
+        total_df['created_utc'] = total_df['created_utc'].transform(dt.datetime.fromtimestamp)
         return total_df
     else:
         print('In the subreddit:', subreddit, '\n',
