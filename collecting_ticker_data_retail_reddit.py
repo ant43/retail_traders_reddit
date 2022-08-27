@@ -35,7 +35,6 @@ def _binarySearchString(stringList, target, beginning, end):
 
     if beginning <= end:
         middle = (beginning+end) // 2
-        print(middle)
         if stringList[middle] == target:
             return True
         elif _strGreaterThan(stringList[middle], target):
@@ -46,31 +45,24 @@ def _binarySearchString(stringList, target, beginning, end):
         return False
 
 def _list_of_tickers_in_comment (comment, list_of_tickers):
-    commentList = comment.split().sort()
+    commentList = comment.split()
+    commentList.sort()
     return list(
-        filter(lambda x: _binarySearchString(commentList, x, 0, len(commentList)+1, 
-        list_of_tickers))
+        filter(lambda x: _binarySearchString(commentList, x, 0, len(commentList)-1), 
+        list_of_tickers)
     )
 
 
 
 def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets'):
-    total_df = _collect_retail_data_df_notickeroutputed(year, month, day, ticker_list,time, subreddit)
+    total_df = collect_retail_data_df(year, month, day, ticker_list,time, subreddit)
     if not total_df.empty:
         #print(total_df['created_utc'])
         #total_df['created_utc'] = total_df['created_utc'].transform(dt.datetime.fromtimestamp)
         total_df.to_csv('./'+csv_file_name+'.csv', header=True,index=False, 
         columns=list(total_df.axes[1]))
 
-        #now we have to make a new row in the csv file that is the list of tickers
-        v = open('./'+csv_file_name+'.csv')
-        r = csv.reader(v)
-        row0 = r.next()
-        row0.append('ticker')
-        for item in r:
-            listOfTickersString = _list_of_tickers_in_comment(item[1], ticker_list)
-            tickerString = '|'.join(listOfTickersString)
-            item.append(tickerString)
+
         return True
     else:
         return False
@@ -79,14 +71,14 @@ def collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time =
 
 
 
-def _collect_retail_data_df_notickeroutputed(year, month, day, ticker_list, time = 86400, subreddit = 'wallstreetbets'):
+def collect_retail_data_df(year, month, day, ticker_list, time = 86400, subreddit = 'wallstreetbets'):
     #this if statment is due to the fact that the push shift API will only work with 200 calls per minute 
     if(len(ticker_list) > 1022*200) :
         num_divisions = math.ceil(len(ticker_list)/(1022*200))
         list_of_calls = _divide_list(ticker_list, num_divisions)
         call_returns_df = []
         for i in list_of_calls:
-            call_returns_df.append(_collect_retail_data_df_notickeroutputed(
+            call_returns_df.append(collect_retail_data_df(
                 year, month, day, i, time, subreddit
             ))
             time.sleep(60)
@@ -126,13 +118,16 @@ def _collect_retail_data_df_notickeroutputed(year, month, day, ticker_list, time
         else:
             total_df = call_returns_df[0]
         
+
+        getTickers = lambda x: '|'.join(_list_of_tickers_in_comment(x, ticker_list))
+        total_df['ticker'] = list(map(getTickers, total_df['body']))
         total_df['created_utc'] =  total_df['created_utc'].transform(int)
         total_df['created_utc'] = total_df['created_utc'].transform(dt.datetime.fromtimestamp)
         return total_df
     else:
         print('In the subreddit:', subreddit, '\n',
         'in the time period:', dt.datetime.fromtimestamp(after).isoformat(), ' to ', dt.datetime.fromtimestamp(before).isoformat(), '\n',
-        'with the list :', *ticker_list[: 10], '...')
+        'with the list :', *ticker_list[: 10], '...', 'there is no results')
         return pd.DataFrame(columns = ['author', 'body', 'created_utc'])
 
     
