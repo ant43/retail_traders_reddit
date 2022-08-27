@@ -2,7 +2,7 @@
 
 
 # retail_traders_reddit
-This script scraps data off subreddits. You choose the time posts start, the particular subreddit, and the data that will be scraped off the subreddit.
+This script scraps data off subreddits. You choose the time posts start, the particular subreddit, and the data that will be scraped off the subreddit. The file test.py provides an example of how to use these scripts to create the testCSV.csv file. 
 
 collect_retail_data_csv(year, month, day, ticker_list, csv_file_name, time = 86400, subreddit = 'wallstreetbets')
 =======
