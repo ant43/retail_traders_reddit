@@ -4,6 +4,7 @@ from pmaw import PushshiftAPI
 import math
 import functools
 import time
+import string
 #becuae the API works with datetime I will have to import another package to deal with this
 import datetime as dt
 '''This takes a list and returns a string with each elment in the list written in the string seperated by |'''
@@ -45,6 +46,9 @@ def _binarySearchString(stringList, target, beginning, end):
         return False
 
 def _list_of_tickers_in_comment (comment, list_of_tickers):
+    comment = comment.translate(
+        str.maketrans('','', string.punctuation)
+    )
     commentList = comment.split()
     commentList.sort()
     return list(
